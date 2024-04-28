@@ -1,0 +1,18 @@
+{
+  "appTitle": "Учет успеваемости группы в универе",
+  "addStudent": "Добавить студента",
+  "studentListEmpty": "Список студентов пуст.",
+  "studentName": "Имя Фамилия",
+  "birthDate": "Год рождения",
+  "idnp": "ИДНП",
+  "actions": "Действия",
+  "searchByName": "Поиск по имени",
+  "searchByIdnp": "Поиск по IDNP",
+  "startDate": "Дата с",
+  "endDate": "Дата по",
+  "search": "Поиск",
+  "reset": "Сбросить",
+  "rowsPerPage": "Количество строк на странице",
+  "add": "Добавить",
+  "update": "Обновить"
+}

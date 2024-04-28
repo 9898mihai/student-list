@@ -1,0 +1,18 @@
+{
+  "appTitle": "Academic Performance Tracking at University",
+  "addStudent": "Add Student",
+  "studentListEmpty": "Student List is Empty.",
+  "studentName": "Name",
+  "birthDate": "Birthdate",
+  "idnp": "IDNP",
+  "actions": "Actions",
+  "searchByName": "Search by Name",
+  "searchByIdnp": "Search by IDNP",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "search": "Search",
+  "reset": "Reset",
+  "rowsPerPage": "Rows per page",
+  "add": "Add",
+  "update": "Update"
+}
