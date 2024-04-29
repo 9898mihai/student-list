@@ -82,19 +82,36 @@ const StudentTable = () => {
   };
 
   // Function to filter students based on search criteria
-  const handleSearch = ({ name, idnp, startDate, endDate }) => {
+  const handleSearch = (
+    { name, idnp, startDate, endDate },
+    resetFilters = false
+  ) => {
     const filtered = students.filter((student) => {
-      const nameMatch = student.name.toLowerCase().includes(name.toLowerCase());
-      const idnpMatch = student.idnp.toLowerCase() === idnp.toLowerCase();
+      let nameMatch = true;
+      if (name) {
+        nameMatch = student.name.toLowerCase().includes(name.toLowerCase());
+      }
+      let idnpMatch = true;
+      if (idnp) {
+        idnpMatch = student.idnp.toLowerCase() === idnp.toLowerCase();
+      }
+
       const birthDate = new Date(student.birthDate);
       const dateMatch =
         (!startDate || birthDate >= startDate) &&
         (!endDate || birthDate <= endDate);
+
+      console.log(dateMatch);
       return nameMatch && idnpMatch && dateMatch;
     });
 
-    setFilteredStudents(filtered);
+    setFilteredStudents(sortStudentsByName(filtered));
     setTableEmpty(filtered.length === 0);
+
+    if (resetFilters) {
+      setFilteredStudents(sortStudentsByName(students));
+      setTableEmpty(false);
+    }
   };
 
   // Function to handle page change in pagination

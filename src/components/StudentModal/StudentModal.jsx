@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, TextField, Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,8 @@ const StudentModal = ({
   );
   const [newIdnp, setNewIdnp] = useState(idnp);
   const [formChanged, setFormChanged] = useState(false);
+  const [isDateError, setIsDateError] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   // Update form fields when editing
   useEffect(() => {
@@ -47,16 +49,19 @@ const StudentModal = ({
   // Function to handle IDNP change
   const handleIDNPChange = (e) => {
     const value = e.target.value.replace(/\D/g, '');
-    if (value.length <= 13) {
-      setNewIdnp(value);
-      setFormChanged(true);
-    }
+    setNewIdnp(value);
+    setFormChanged(true);
   };
 
   // Function to handle date change
   const handleDateChange = (date) => {
     setNewBirthDate(date);
     setFormChanged(true);
+    setIsDateError(
+      !date ||
+        date.isBefore(dayjs('1900-01-01')) ||
+        dayjs(date).isAfter(dayjs())
+    );
   };
 
   // Function to handle form submission
@@ -83,18 +88,27 @@ const StudentModal = ({
     setFormChanged(false);
   };
 
-  // Memoized value to determine if form is valid
-  const isFormValid = useMemo(() => {
-    return !!(newName && newBirthDate && newIdnp && newIdnp.length === 13);
-  }, [newName, newBirthDate, newIdnp]);
+  // Function to reset form fields
+  const handleModalClose = () => {
+    setNewName('');
+    setNewBirthDate(null);
+    setNewIdnp('');
+    setFormChanged(false);
+    onClose();
+  };
 
-  // Memoized value to determine if submit button should be disabled
-  const isSubmitDisabled = useMemo(() => {
-    return !isFormValid || !formChanged;
-  }, [isFormValid, formChanged]);
+  useEffect(() => {
+    setIsFormValid(
+      newName &&
+        newBirthDate &&
+        !isDateError &&
+        newIdnp &&
+        newIdnp.length === 13
+    );
+  }, [newName, newBirthDate, isDateError, newIdnp]);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleModalClose}>
       <div className={styles.modal}>
         <TextField
           label={t('studentName')}
@@ -113,6 +127,7 @@ const StudentModal = ({
             renderInput={(props) => <TextField {...props} />}
             format={'DD/MM/YYYY'}
             maxDate={dayjs()}
+            onError={() => setIsDateError(true)}
           />
         </LocalizationProvider>
         <TextField
@@ -126,7 +141,7 @@ const StudentModal = ({
           onClick={handleSubmit}
           variant="contained"
           color="primary"
-          disabled={isSubmitDisabled}
+          disabled={!isFormValid || !formChanged}
         >
           {isEditing ? t('update') : t('add')}
         </Button>

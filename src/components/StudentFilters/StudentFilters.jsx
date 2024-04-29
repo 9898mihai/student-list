@@ -51,7 +51,28 @@ const StudentFilters = ({ onSearch }) => {
     setIdnpFilter('');
     setStartDate(null);
     setEndDate(null);
-    onSearch({ name: '', idnp: '', startDate: null, endDate: null });
+    onSearch({ name: '', idnp: '', startDate: null, endDate: null }, true);
+  };
+
+  // Validate input dates
+  const handleStartDateChange = (date) => {
+    if (
+      !date ||
+      dayjs(date).isBefore(dayjs('1900-01-01')) ||
+      dayjs(date).isAfter(dayjs())
+    )
+      return;
+    setStartDate(date);
+  };
+
+  const handleEndDateChange = (date) => {
+    if (
+      !date ||
+      dayjs(date).isBefore(dayjs('1900-01-01')) ||
+      dayjs(date).isAfter(dayjs())
+    )
+      return;
+    setEndDate(date);
   };
 
   // Determine if any filter is set
@@ -88,7 +109,7 @@ const StudentFilters = ({ onSearch }) => {
               label={t('startDate')}
               slotProps={{ textField: { fullWidth: true } }}
               value={startDate}
-              onChange={(date) => setStartDate(date)}
+              onChange={handleStartDateChange}
               renderInput={(params) => <TextField {...params} />}
               format={'DD/MM/YYYY'}
               maxDate={dayjs()}
@@ -101,7 +122,7 @@ const StudentFilters = ({ onSearch }) => {
               label={t('endDate')}
               slotProps={{ textField: { fullWidth: true } }}
               value={endDate}
-              onChange={(date) => setEndDate(date)}
+              onChange={handleEndDateChange}
               renderInput={(params) => <TextField {...params} />}
               format={'DD/MM/YYYY'}
               maxDate={dayjs()}
