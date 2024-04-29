@@ -111,6 +111,8 @@ const StudentModal = ({
             value={newBirthDate}
             onChange={handleDateChange}
             renderInput={(props) => <TextField {...props} />}
+            format={'DD/MM/YYYY'}
+            maxDate={dayjs()}
           />
         </LocalizationProvider>
         <TextField

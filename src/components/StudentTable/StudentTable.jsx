@@ -23,6 +23,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import StudentModal from '../StudentModal/StudentModal';
 import StudentFilters from '../StudentFilters/StudentFilters';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 const StudentTable = () => {
   const { t } = useTranslation();
@@ -46,15 +47,6 @@ const StudentTable = () => {
   useEffect(() => {
     setFilteredStudents(sortStudentsByName(students));
   }, [students]);
-
-  // Function to format date string
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-  };
 
   // Function to open modal for editing or adding student
   const handleOpenModal = (student) => {
@@ -93,7 +85,7 @@ const StudentTable = () => {
   const handleSearch = ({ name, idnp, startDate, endDate }) => {
     const filtered = students.filter((student) => {
       const nameMatch = student.name.toLowerCase().includes(name.toLowerCase());
-      const idnpMatch = student.idnp.toLowerCase().includes(idnp.toLowerCase());
+      const idnpMatch = student.idnp.toLowerCase() === idnp.toLowerCase();
       const birthDate = new Date(student.birthDate);
       const dateMatch =
         (!startDate || birthDate >= startDate) &&
@@ -164,7 +156,9 @@ const StudentTable = () => {
                         }}
                       >
                         <TableCell>{student.name}</TableCell>
-                        <TableCell>{formatDate(student.birthDate)}</TableCell>
+                        <TableCell>
+                          {dayjs(student.birthDate).format('DD/MM/YYYY')}
+                        </TableCell>
                         <TableCell>{student.idnp}</TableCell>
                         <TableCell>
                           <IconButton

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Box, Button, Grid } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 const StudentFilters = ({ onSearch }) => {
   const { t } = useTranslation();
@@ -12,6 +13,32 @@ const StudentFilters = ({ onSearch }) => {
   const [idnpFilter, setIdnpFilter] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [isDateValid, setIsDateValid] = useState(true);
+  const [isSearchEnabled, setIsSearchEnabled] = useState(false);
+
+  // Check date validity
+  useEffect(() => {
+    setIsDateValid(
+      (!startDate && !endDate) ||
+        (startDate && dayjs(startDate).isValid() && !endDate) ||
+        (endDate && dayjs(endDate).isValid() && !startDate) ||
+        (startDate &&
+          endDate &&
+          dayjs(startDate).isValid() &&
+          dayjs(endDate).isValid() &&
+          startDate <= endDate)
+    );
+  }, [startDate, endDate]);
+
+  // Enable search button
+  useEffect(() => {
+    setIsSearchEnabled(
+      nameFilter.trim() !== '' ||
+        idnpFilter.trim() !== '' ||
+        startDate !== null ||
+        endDate !== null
+    );
+  }, [nameFilter, idnpFilter, startDate, endDate]);
 
   // Function to handle search based on filters
   const handleSearch = () => {
@@ -46,7 +73,13 @@ const StudentFilters = ({ onSearch }) => {
             fullWidth
             label={t('searchByIdnp')}
             value={idnpFilter}
-            onChange={(e) => setIdnpFilter(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '');
+              setIdnpFilter(value);
+            }}
+            inputProps={{
+              maxLength: 13,
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
@@ -57,6 +90,8 @@ const StudentFilters = ({ onSearch }) => {
               value={startDate}
               onChange={(date) => setStartDate(date)}
               renderInput={(params) => <TextField {...params} />}
+              format={'DD/MM/YYYY'}
+              maxDate={dayjs()}
             />
           </LocalizationProvider>
         </Grid>
@@ -68,6 +103,8 @@ const StudentFilters = ({ onSearch }) => {
               value={endDate}
               onChange={(date) => setEndDate(date)}
               renderInput={(params) => <TextField {...params} />}
+              format={'DD/MM/YYYY'}
+              maxDate={dayjs()}
             />
           </LocalizationProvider>
         </Grid>
@@ -78,7 +115,12 @@ const StudentFilters = ({ onSearch }) => {
           md={2}
           style={{ display: 'flex', alignItems: 'center' }}
         >
-          <Button fullWidth variant="contained" onClick={handleSearch}>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleSearch}
+            disabled={!isSearchEnabled || !isDateValid}
+          >
             {t('search')}
           </Button>
         </Grid>
