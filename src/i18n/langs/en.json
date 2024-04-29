@@ -14,5 +14,6 @@
   "reset": "Reset",
   "rowsPerPage": "Rows per page",
   "add": "Add",
-  "update": "Update"
+  "update": "Update",
+  "noDataFound": "No data found matching the specified criteria. Please try again with different filters."
 }

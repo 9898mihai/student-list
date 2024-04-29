@@ -32,6 +32,7 @@ const StudentTable = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editedStudent, setEditedStudent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [tableEmpty, setTableEmpty] = useState(false);
 
   const [filteredStudents, setFilteredStudents] = useState(students);
   const [page, setPage] = useState(0);
@@ -99,7 +100,9 @@ const StudentTable = () => {
         (!endDate || birthDate <= endDate);
       return nameMatch && idnpMatch && dateMatch;
     });
+
     setFilteredStudents(filtered);
+    setTableEmpty(filtered.length === 0);
   };
 
   // Function to handle page change in pagination
@@ -128,61 +131,72 @@ const StudentTable = () => {
       ) : (
         <>
           <StudentFilters onSearch={handleSearch} />
-
-          <TableContainer component={Paper} style={{ marginTop: '10px' }}>
-            <Table>
-              <TableHead style={{ backgroundColor: '#f0f0f0' }}>
-                <TableRow>
-                  <TableCell>{t('studentName')}</TableCell>
-                  <TableCell>{t('birthDate')}</TableCell>
-                  <TableCell>{t('idnp')}</TableCell>
-                  <TableCell>{t('actions')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredStudents
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((student) => (
-                    <TableRow
-                      key={student.id}
-                      style={{
-                        textDecoration: student.excluded
-                          ? 'line-through'
-                          : 'none',
-                        backgroundColor: student.excluded
-                          ? '#e0e0e0'
-                          : 'inherit',
-                      }}
-                    >
-                      <TableCell>{student.name}</TableCell>
-                      <TableCell>{formatDate(student.birthDate)}</TableCell>
-                      <TableCell>{student.idnp}</TableCell>
-                      <TableCell>
-                        <IconButton
-                          onClick={() => handleOpenModal(student)}
-                          disabled={student.excluded}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleExclude(student)}>
-                          {student.excluded ? <RestoreIcon /> : <DeleteIcon />}
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={filteredStudents.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              labelRowsPerPage={t('rowsPerPage')}
-            />
-          </TableContainer>
+          {tableEmpty ? (
+            <div
+              style={{ textAlign: 'center', marginTop: '20px', color: '#666' }}
+            >
+              <p>{t('noDataFound')}</p>
+            </div>
+          ) : (
+            <TableContainer component={Paper} style={{ marginTop: '10px' }}>
+              <Table>
+                <TableHead style={{ backgroundColor: '#f0f0f0' }}>
+                  <TableRow>
+                    <TableCell>{t('studentName')}</TableCell>
+                    <TableCell>{t('birthDate')}</TableCell>
+                    <TableCell>{t('idnp')}</TableCell>
+                    <TableCell>{t('actions')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredStudents
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((student) => (
+                      <TableRow
+                        key={student.id}
+                        style={{
+                          textDecoration: student.excluded
+                            ? 'line-through'
+                            : 'none',
+                          backgroundColor: student.excluded
+                            ? '#e0e0e0'
+                            : 'inherit',
+                        }}
+                      >
+                        <TableCell>{student.name}</TableCell>
+                        <TableCell>{formatDate(student.birthDate)}</TableCell>
+                        <TableCell>{student.idnp}</TableCell>
+                        <TableCell>
+                          <IconButton
+                            onClick={() => handleOpenModal(student)}
+                            disabled={student.excluded}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={() => handleExclude(student)}>
+                            {student.excluded ? (
+                              <RestoreIcon />
+                            ) : (
+                              <DeleteIcon />
+                            )}
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={filteredStudents.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage={t('rowsPerPage')}
+              />
+            </TableContainer>
+          )}
         </>
       )}
 
